@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora de Forwards Financieros</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            color: #000;
+        }
+        header {
+            background: #0b3c5d;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 30px auto;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+        }
+        .card h2 {
+            color: #0b3c5d;
+            border-bottom: 2px solid #0b3c5d;
+            padding-bottom: 6px;
+        }
+        label {
+            display: block;
+            margin-top: 12px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 4px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            margin-top: 18px;
+            padding: 10px 22px;
+            background: #0b3c5d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #092f48;
+        }
+        .result {
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: #000;
+            color: white;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>📊 Calculadora de Forwards Financieros</h1>
+    <p>Tiempo configurable en días, meses o años</p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Forward sobre Divisas (FX Forward)</h2>
+        <label>Tipo de cambio Spot (S)</label>
+        <input type="number" id="fxS">
+        <label>Tasa doméstica</label>
+        <input type="number" id="fxRd">
+        <label>Tasa extranjera</label>
+        <input type="number" id="fxRf">
+        <label>Tiempo</label>
+        <input type="number" id="fxT">
+        <select id="fxUnidad">
+            <option value="365">Días</option>
+            <option value="12">Meses</option>
+            <option value="1">Años</option>
+        </select>
+        <button onclick="calcularFX()">Calcular</button>
+        <div class="result" id="fxResultado"></div>
+    </div>
+
+    <div class="card">
+        <h2>Forward sin Ingresos</h2>
+        <label>Precio Spot</label>
+        <input type="number" id="s0">
+        <label>Tasa libre de riesgo</label>
+        <input type="number" id="r0">
+        <label>Tiempo</label>
+        <input type="number" id="t0">
+        <select id="unidad0">
+            <option value="365">Días</option>
+            <option value="12">Meses</option>
+            <option value="1">Años</option>
+        </select>
+        <button onclick="calcularSinIngresos()">Calcular</button>
+        <div class="result" id="sinResultado"></div>
+    </div>
+
+    <div class="card">
+        <h2>Forward con Dividendos</h2>
+        <label>Precio Spot</label>
+        <input type="number" id="sd">
+        <label>Valor presente dividendos</label>
+        <input type="number" id="div">
+        <label>Tasa libre de riesgo</label>
+        <input type="number" id="rd">
+        <label>Tiempo</label>
+        <input type="number" id="td">
+        <select id="unidadD">
+            <option value="365">Días</option>
+            <option value="12">Meses</option>
+            <option value="1">Años</option>
+        </select>
+        <button onclick="calcularConIngresos()">Calcular</button>
+        <div class="result" id="conResultado"></div>
+    </div>
+
+    <div class="card">
+        <h2>Forward Rate Agreement (FRA)</h2>
+        <label>Tasa spot corta</label>
+        <input type="number" id="r1">
+        <label>Tasa spot larga</label>
+        <input type="number" id="r2">
+        <label>Tiempo corto</label>
+        <input type="number" id="t1">
+        <select id="u1">
+            <option value="365">Días</option>
+            <option value="12">Meses</option>
+            <option value="1">Años</option>
+        </select>
+        <label>Tiempo largo</label>
+        <input type="number" id="t2">
+        <select id="u2">
+            <option value="365">Días</option>
+            <option value="12">Meses</option>
+            <option value="1">Años</option>
+        </select>
+        <button onclick="calcularFRA()">Calcular</button>
+        <div class="result" id="fraResultado"></div>
+    </div>
+
+</div>
+
+<footer>
+    © Herramienta financiera académica
+</footer>
+
+<script>
+    function convertirTiempo(valor, unidad) {
+        return valor / unidad;
+    }
+
+    function calcularFX() {
+        let T = convertirTiempo(fxT.value, fxUnidad.value);
+        let F = fxS.value * Math.exp((fxRd.value - fxRf.value) * T);
+        fxResultado.innerHTML = "Forward FX = " + F.toFixed(4);
+    }
+
+    function calcularSinIngresos() {
+        let T = convertirTiempo(t0.value, unidad0.value);
+        let F = s0.value * Math.exp(r0.value * T);
+        sinResultado.innerHTML = "Forward = " + F.toFixed(4);
+    }
+
+    function calcularConIngresos() {
+        let T = convertirTiempo(td.value, unidadD.value);
+        let F = (sd.value - div.value) * Math.exp(rd.value * T);
+        conResultado.innerHTML = "Forward = " + F.toFixed(4);
+    }
+
+    function calcularFRA() {
+        let T1 = convertirTiempo(t1.value, u1.value);
+        let T2 = convertirTiempo(t2.value, u2.value);
+        let FRA = ((r2.value * T2) - (r1.value * T1)) / (T2 - T1);
+        fraResultado.innerHTML = "Tasa FRA = " + (FRA * 100).toFixed(4) + "%";
+    }
+</script>
+
+</body>
+</html>
